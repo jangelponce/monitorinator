@@ -18,7 +18,7 @@ class Api::V1::ServicesController < Api::V1::BaseController
     @service = Service.new(service_params)
 
     if @service.save
-      render json: @service, status: :created, location: @service
+      render json: @service, status: :created
     else
       render json: @service.errors, status: :unprocessable_entity
     end
