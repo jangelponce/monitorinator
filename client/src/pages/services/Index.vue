@@ -32,10 +32,12 @@
     </MModal>
 
     <MDropdown :text="'Select a service'">
-      <MDropdownItem v-for="service in services" :key="service.id">
+      <MDropdownItem v-for="service in services" :key="service.id" @click="selectService(service)">
         {{ service.name }}
       </MDropdownItem>
     </MDropdown>
+
+    <MServiceDashboard v-if="selectedService.id" :service="selectedService"></MServiceDashboard>
   </div>
 </template>
 
@@ -44,6 +46,7 @@ import axios from 'axios'
 import MDropdown from '@/components/Dropdown.vue'
 import MDropdownItem from '@/components/DropdownItem.vue'
 import MModal from '@/components/Modal.vue'
+import MServiceDashboard from '@/components/ServiceDashboard.vue'
 
 export default {
   name: 'services-index',
@@ -51,10 +54,12 @@ export default {
     MDropdown,
     MDropdownItem,
     MModal,
+    MServiceDashboard,
   },
   data() {
     return {
       openModal: false,
+      selectedService: {},
       services: [],
       form: {
         name: ""
@@ -83,6 +88,9 @@ export default {
         .catch((error) => {
           alert(error)
         })
+    },
+    selectService (service) {
+      this.selectedService = service
     }
   }
 }

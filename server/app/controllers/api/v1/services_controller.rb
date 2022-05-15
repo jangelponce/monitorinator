@@ -1,5 +1,5 @@
 class Api::V1::ServicesController < Api::V1::BaseController
-  before_action :set_service, only: %i[ show update destroy ]
+  before_action :set_service, only: %i[ show update destroy calendar ]
 
   # GET /api/v1/services
   def index
@@ -36,6 +36,26 @@ class Api::V1::ServicesController < Api::V1::BaseController
   # DELETE /api/v1/services/1
   def destroy
     @service.destroy
+  end
+
+  def calendar
+    weeks = [
+      {
+        week: "Semana 10",
+        days: [
+          {
+            day: Date.today,
+            workshifts: [
+              {
+                hour: Time.now.hour,
+                assigned_to: "Julian"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+    render json: weeks
   end
 
   private
