@@ -6,6 +6,7 @@ Rails.application.routes.draw do
         member do
           get :calendar
         end
+        resources :workshifts
       end
     end
   end
