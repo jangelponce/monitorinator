@@ -35,7 +35,6 @@ export default {
   },
   methods: {
     toggle() {
-      console.log('toggling')
       this.isActive = !this.isActive
     }
   }

@@ -7,13 +7,12 @@
           <p class="subtitle">Panel general de servicios</p>
         </div>
         <div class="media-right">
-          <button class="button is-primary">Nuevo</button>
+          <button class="button is-primary" @click="openModal = true">Nuevo</button>
         </div>
       </div>
     </div>
 
-    <div class="modal is-active">
-      <div class="modal-background"></div>
+    <MModal :is-active="openModal" @close="openModal = false">
       <div class="modal-card">
         <section class="modal-card-body">
           <p class="title is-4">Nuevo servicio</p>
@@ -30,8 +29,7 @@
           </button>
         </footer>
       </div>
-      <button class="modal-close is-large" aria-label="close"></button>
-    </div>
+    </MModal>
 
     <MDropdown :text="'Select a service'">
       <MDropdownItem v-for="service in services" :key="service.id">
@@ -45,15 +43,18 @@
 import axios from 'axios'
 import MDropdown from '@/components/Dropdown.vue'
 import MDropdownItem from '@/components/DropdownItem.vue'
+import MModal from '@/components/Modal.vue'
 
 export default {
   name: 'services-index',
   components: {
     MDropdown,
-    MDropdownItem
+    MDropdownItem,
+    MModal,
   },
   data() {
     return {
+      openModal: false,
       services: [],
       form: {
         name: ""
@@ -65,7 +66,7 @@ export default {
   },
   methods: {
     getServices () {
-      axios.get('http://172.29.239.236:3000/api/v1/services')
+      axios.get('http://192.168.70.214:3000/api/v1/services')
         .then((result) => {
           this.services = result.data
         })
@@ -74,9 +75,10 @@ export default {
         })
     },
     submitService () {
-      axios.post('http://172.29.239.236:3000/api/v1/services', this.form)
+      axios.post('http://192.168.70.214:3000/api/v1/services', this.form)
         .then((result) => {
           this.services.push(result.data)
+          this.openModal = false
         })
         .catch((error) => {
           alert(error)
