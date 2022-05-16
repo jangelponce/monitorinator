@@ -31,14 +31,21 @@
       </div>
     </MModal>
 
-    <MDropdown :text="'Selecciona un servicio'" class="mr-4">
-      <MDropdownItem v-for="service in services" :key="service.id" @click="selectedService = service">
+    <MDropdown 
+      v-model="isServiceDropdownActive"
+      :text="selectedService.name || 'Selecciona un servicio'"
+      class="mr-4"
+    >
+      <MDropdownItem v-for="service in services" :key="service.id" @click="selectService(service)">
         {{ service.name }}
       </MDropdownItem>
     </MDropdown>
 
-    <MDropdown :text="'Selecciona una semana'">
-      <MDropdownItem v-for="(week, i) in weeks" :key="i" @click="selectedWeek = week">
+    <MDropdown 
+      v-model="isWeekDropdownActive" 
+      :text="selectedWeek ? selectedWeekName : 'Selecciona una semana'"
+    >
+      <MDropdownItem v-for="(week, i) in weeks" :key="i" @click="selectWeek(week, i)">
         Semana {{ i + 1 }}
       </MDropdownItem>
     </MDropdown>
@@ -68,10 +75,13 @@ export default {
         weeks: []
       },
       selectedWeek: null,
+      selectedWeekName: null,
       services: [],
       form: {
         name: ""
-      }
+      },
+      isServiceDropdownActive: false,
+      isWeekDropdownActive: false
     }
   },
   computed: {
@@ -112,6 +122,15 @@ export default {
         .catch((error) => {
           alert(error)
         })
+    },
+    selectService(service) {
+      this.selectedService = service
+      this.isServiceDropdownActive = false
+    },
+    selectWeek(week, i) {
+      this.selectedWeek = week
+      this.selectedWeekName = `Semana ${i + 1}`
+      this.isWeekDropdownActive = false
     }
   },
   watch: {

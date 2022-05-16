@@ -1,7 +1,7 @@
 <template>
   <div :class="buttonClass">
     <div class="dropdown-trigger">
-      <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" @click="toggle">
+      <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" @click="$emit('update:modelValue', !modelValue)">
         <span>{{ text }}</span>
         <span class="icon is-small">
           <font-awesome-icon :icon="['fas', 'angle-down']" />
@@ -20,22 +20,16 @@
 export default {
   name: "m-dropdown",
   props: {
-    text: String
-  },
-  data () {
-    return {
-      isActive: false
+    text: String,
+    modelValue: {
+      type: Boolean,
+      default: false,
     }
   },
   computed: {
     buttonClass() {
       const className = 'dropdown'
-      return this.isActive ? className + ' is-active' : className;
-    }
-  },
-  methods: {
-    toggle() {
-      this.isActive = !this.isActive
+      return this.modelValue ? className + ' is-active' : className;
     }
   }
 }
