@@ -13,11 +13,22 @@ VUE_APP_SERVER_URL=http://<remote-network-ip>:3000
 ```
 
 ## Start up
-In different terminals run
+From Running server
 ```
-rails s -b 0.0.0.0
+cd server && rails s -b 0.0.0.0
 ```
+Running client
 ```
-npm run install
+cd client && npm run install
 ```
-
+## Components
+### Server
+#### Framework
+Rails 7.0
+#### Database
+SQLite
+### Client
+#### Framework
+Vue 3 (using options api)
+#### CSS
+Bulma
