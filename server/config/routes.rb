@@ -11,6 +11,7 @@ Rails.application.routes.draw do
         resources :workshifts do 
           collection do 
             get :week
+            put :calculate
           end
         end
       end

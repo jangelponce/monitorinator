@@ -7,6 +7,7 @@
           <p class="subtitle">{{ dateRangeToSubtitle(beginningOfWeek, endOfWeek) }}</p>
         </div>
         <div class="media-right">
+          <button class="button mr-4 is-primary" @click="calculateWorkshifts">Calcular turnos</button>
           <button class="button is-primary" @click="editMode = !editMode">Editar disponibilidad</button>
         </div>
       </div>
@@ -73,7 +74,7 @@ export default {
   },
   data () {
     return {
-      editMode: true,
+      editMode: false,
       beginningOfWeek: null,
       endOfWeek: null,
       days: [],
@@ -103,6 +104,16 @@ export default {
       axios.get(`http://192.168.70.214:3000/api/v1/users`)
         .then((response) => {
           this.users = response.data
+        })
+        .catch((error) => {
+          alert(error)
+        })
+    },
+    calculateWorkshifts() {
+      console.log("calculating")
+      axios.put(`http://192.168.70.214:3000/api/v1/services/${this.service.id}/workshifts/calculate?date=${this.week}`)
+        .then(() => {
+          console.log("calculations done")
         })
         .catch((error) => {
           alert(error)

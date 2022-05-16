@@ -70,15 +70,6 @@ export default {
       }
       return false
     }
-  },
-  // watch: {
-  //   available(value) {
-  //     if (value) {
-  //       this.createWorkshift()
-  //     } else {
-  //       this.deleteWorkshift()
-  //     }
-  //   }
-  // }
+  }
 }
 </script>
