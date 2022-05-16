@@ -12,39 +12,56 @@
       </div>
     </div>
 
-    <aside class="menu pb-6" v-for="day in days" :key="day.day">
-      <p class="menu-label">
-        {{ dateToCardTitle(day.day) }}
-      </p>
-      <ul class="menu-list">
-        <li v-for="workshift in day.workshifts" :key="workshift.hour">
-          <div class="level">
-            <div class="level-item">
+    <table class="table is-fullwidth">
+      <tbody>
+        <template v-for="day in days" :key="day.day">
+          <tr>
+            <td class="pt-6">
+              <p class="menu-label">
+                {{ dateToCardTitle(day.day) }}
+              </p>
+            </td>
+            <template v-if="editMode">
+              <td v-for="user in users" :key="user.id" class="pt-6">
+                <p class="menu-label">
+                  {{ user.name }}
+                </p>
+              </td>
+            </template>
+            <template v-else>
+              <td colspan="1"></td>
+            </template>
+          </tr>
+          <tr v-for="workshift in day.workshifts" :key="workshift.hour">
+            <td>
               {{ timeToHourRange(workshift.hour) }}
-            </div>
-            <div v-if="editMode" class="level-item">
-              <div v-if="workshift.user">
-                {{ workshift.user && workshift.user.name }}  
-              </div>
-              <div v-else>
-                Edit mode
-              </div>
-            </div>
-            <div v-else class="level-item">
-              {{ workshift.user && workshift.user.name }}
-            </div>
-          </div>
-        </li>
-      </ul>
-    </aside>
+            </td>
+            <template v-if="editMode">
+              <td v-for="user in users" :key="user.id">
+                <MAvailabilityCheckbox :user="user.id" :service="service.id" :datetime="workshift.hour" />
+              </td>
+            </template>
+            <template v-else>
+              <td>
+                {{ workshift.user && workshift.user.name }}
+              </td>
+            </template>
+          </tr>
+        </template>
+      </tbody>
+    </table>
   </section>  
 </template>
 
 <script>
 import axios from "axios"
+import MAvailabilityCheckbox from "@/components/AvailabilityCheckbox.vue"
 
 export default {
   name: 'm-service-dashboard',
+  components: {
+    MAvailabilityCheckbox
+  },
   props: {
     service: Object,
     week: String,
@@ -54,11 +71,13 @@ export default {
       editMode: true,
       beginningOfWeek: null,
       endOfWeek: null,
-      days: []
+      days: [],
+      users: []
     }
   },
   created() {
     this.getWorkshiftsWeek()
+    this.getUsers()
   },
   methods: {
     getWorkshiftsWeek() {
@@ -74,6 +93,15 @@ export default {
             alert(error)
           })
       }
+    },
+    getUsers() {
+      axios.get(`http://192.168.70.214:3000/api/v1/users`)
+        .then((response) => {
+          this.users = response.data
+        })
+        .catch((error) => {
+          alert(error)
+        })
     },
     dateRangeToSubtitle(begin, end) {
       const b = new Date(begin)
