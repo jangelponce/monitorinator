@@ -83,7 +83,6 @@ class Api::V1::WorkshiftsController < Api::V1::BaseController
       workshifts = (begin_of_the_day..end_of_the_day).map do |hour|
         datetime = DateTime.new(current_day.year, current_day.month, current_day.day, hour, 0)
         ws = @service.workshifts.where(timestamp: datetime).includes(:user).as_json(include: :user)
-        puts ws
         accepted = ws.find do |w|
           w["status"] === "accepted"
         end

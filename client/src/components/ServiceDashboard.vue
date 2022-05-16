@@ -15,6 +15,34 @@
 
     <table class="table is-fullwidth">
       <tbody>
+        <template v-if="days.length">
+          <tr>
+            <td class="pt-6">
+              <p class="menu-label">
+                Usuarios
+              </p>
+            </td>
+            <td class="pt-6" colspan="1">
+              <p class="menu-label">
+                Turnos
+              </p>
+            </td>
+          </tr>
+          <template v-for="user in users" :key="user.id">
+            <tr class="has-text-white">
+              <td :class="userColor(user.id)">
+                <p>
+                  {{ user.name }}
+                </p>
+              </td>
+              <td colspan="3">
+                <p class="menu-label">
+                  {{ userCounts[user.id] }}
+                </p>
+              </td>
+            </tr>
+          </template>
+        </template>
         <template v-for="day in days" :key="day.day">
           <tr>
             <td class="pt-6">
@@ -33,8 +61,8 @@
               <td colspan="1"></td>
             </template>
           </tr>
-          <tr v-for="ws in day.workshifts" :key="ws.hour">
-            <td>
+          <tr v-for="ws in day.workshifts" :key="ws.hour" class="has-text-white">
+            <td :class="hourTdClass(ws)">
               {{ timeToHourRange(ws.hour) }}
             </td>
             <template v-if="editMode">
@@ -48,9 +76,18 @@
               </td>
             </template>
             <template v-else>
-              <td>
-                {{ ws.workshift && ws.workshift.user.name }}
-              </td>
+              <template v-if="ws.workshift">
+                <td :class="userColor(ws.workshift.user.id)">
+                  <p>
+                    {{ ws.workshift.user.name }}
+                  </p>
+                </td>
+              </template>
+              <template v-else>
+                <td class="has-text-centered has-text-warning">
+                  <font-awesome-icon :icon="['fas', 'triangle-exclamation']" />
+                </td>
+              </template>
             </template>
           </tr>
         </template>
@@ -78,7 +115,19 @@ export default {
       beginningOfWeek: null,
       endOfWeek: null,
       days: [],
-      users: []
+      users: [],
+      userCounts: {}
+    }
+  },
+  computed: {
+    userColors () {
+      let colors = {}
+      const colorClasses = ['primary','info','warning']
+      this.users.forEach((user, i) => {
+        colors[user.id] = colorClasses[i]
+      })
+
+      return colors
     }
   },
   created() {
@@ -94,6 +143,7 @@ export default {
             this.days = days
             this.beginningOfWeek = week.beginning_of_week
             this.endOfWeek = week.end_of_week
+            this.countWorkshiftsPerUser()
           })
           .catch((error) => {
             alert(error)
@@ -119,14 +169,33 @@ export default {
           alert(error)
         })
     },
-    dateRangeToSubtitle(begin, end) {
-      const b = new Date(begin)
-      const e = new Date(end)
-      e.setHours(e.getHours() + 1)
-      const beginDate = new Intl.DateTimeFormat('es').format(b)
-      const endDate = new Intl.DateTimeFormat('es').format(e)
+    countWorkshiftsPerUser() {
+      let counts = {}
+      this.users.forEach((user) => {
+        counts[user.id] = 0
+      })
 
-      return `Del ${beginDate} al ${endDate}`
+      this.days.forEach((day) => {
+        day.workshifts.forEach((ws) => {
+          if (ws.workshift) {
+            counts[ws.workshift.user_id] = counts[ws.workshift.user_id] + 1
+          }
+        })
+      })
+      this.userCounts = counts
+    },
+    dateRangeToSubtitle(begin, end) {
+      if (begin && end) {
+        const b = new Date(begin)
+        const e = new Date(end)
+        e.setHours(e.getHours() + 1)
+        const beginDate = new Intl.DateTimeFormat('es').format(b)
+        const endDate = new Intl.DateTimeFormat('es').format(e)
+  
+        return `Del ${beginDate} al ${endDate}`
+      } else {
+        return 'Selecciona una semana'
+      }
     },
     dateToCardTitle(value) {
       const date = new Date(value)
@@ -140,6 +209,17 @@ export default {
       const endTime = new Intl.DateTimeFormat('es', { timeStyle: 'short' }).format(et)
 
       return `${beginTime} - ${endTime}`
+    },
+    hourTdClass(ws) {
+      if (ws.workshift) {
+        return 'has-background-success-dark'
+      } else {
+        return 'has-background-danger-dark'
+      }
+    },
+    userColor(user_id) {
+      const color = this.userColors[user_id]
+      return color ? `has-background-${color}` : ''
     }
   },
   watch: {

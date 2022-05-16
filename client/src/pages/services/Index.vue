@@ -31,7 +31,7 @@
       </div>
     </MModal>
 
-    <MDropdown :text="'Selecciona un servicio'">
+    <MDropdown :text="'Selecciona un servicio'" class="mr-4">
       <MDropdownItem v-for="service in services" :key="service.id" @click="selectedService = service">
         {{ service.name }}
       </MDropdownItem>
