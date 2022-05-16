@@ -35,7 +35,10 @@ class Api::V1::WorkshiftsController < Api::V1::BaseController
     end_of_week = current_day.end_of_week
 
     @workshifts = {
-      week: "#{beginning_of_week} - #{end_of_week}",
+      week: {
+        beginning_of_week: beginning_of_week, 
+        end_of_week: end_of_week
+      },
       days: []
     }
 

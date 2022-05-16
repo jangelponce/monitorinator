@@ -38,8 +38,8 @@
     </MDropdown>
 
     <MDropdown :text="'Selecciona una semana'">
-      <MDropdownItem v-for="week in weeks" :key="week.id" @click="selectedWeek = week">
-        {{ week }}
+      <MDropdownItem v-for="(week, i) in weeks" :key="i" @click="selectedWeek = week">
+        Semana {{ i + 1 }}
       </MDropdownItem>
     </MDropdown>
 

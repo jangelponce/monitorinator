@@ -2,7 +2,7 @@
   <section class="section">
     <h1 class="title">{{ service.name }}</h1>
     <h2 class="subtitle">
-      {{ weekName }}
+      {{ dateRangeToSubtitle(beginningOfWeek, endOfWeek) }}
     </h2>
     <div class="tile is-ancestor" v-for="(days, i) in chunks" :key="i">
       <div class="tile is-parent">
@@ -39,7 +39,8 @@ export default {
   },
   data () {
     return {
-      weekName: "Cargando...",
+      beginningOfWeek: null,
+      endOfWeek: null,
       chunks: []
     }
   },
@@ -52,7 +53,8 @@ export default {
         axios.get(`http://192.168.70.214:3000/api/v1/services/${this.service.id}/workshifts/week?date=${this.week}`)
           .then((response) => {
             const { week, days} = response.data
-            this.weekName = week
+            this.beginningOfWeek = week.beginning_of_week
+            this.endOfWeek = week.end_of_week
             this.chunks = []
             for (let i = 0; i < days.length; i += 3) {
               this.chunks.push(days.slice(i, i + 3))
@@ -62,6 +64,15 @@ export default {
             alert(error)
           })
       }
+    },
+    dateRangeToSubtitle(begin, end) {
+      const b = new Date(begin)
+      const e = new Date(end)
+      e.setHours(e.getHours() + 1)
+      const beginDate = new Intl.DateTimeFormat('es').format(b)
+      const endDate = new Intl.DateTimeFormat('es').format(e)
+
+      return `Del ${beginDate} al ${endDate}`
     },
     dateToCardTitle(value) {
       const date = new Date(value)
