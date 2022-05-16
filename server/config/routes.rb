@@ -4,7 +4,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :services do 
         member do
-          get :calendar
+          get :weeks
         end
         resources :workshifts do 
           collection do 

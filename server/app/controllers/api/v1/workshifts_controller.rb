@@ -25,8 +25,8 @@ class Api::V1::WorkshiftsController < Api::V1::BaseController
   end
 
   def week
-    beginning_of_week = if params[:beginning_of_week]
-      DateTime.new(*params[:beginning_of_week].split("-").map(&:to_i))
+    beginning_of_week = if params[:date]
+      DateTime.new(*params[:date].split("-").map(&:to_i))
     else
       DateTime.now
     end.beginning_of_week
@@ -34,12 +34,10 @@ class Api::V1::WorkshiftsController < Api::V1::BaseController
     current_day = beginning_of_week
     end_of_week = current_day.end_of_week
 
-    @workshifts = [
-      {
-        week: "#{beginning_of_week} - #{end_of_week}",
-        days: []
-      }
-    ]
+    @workshifts = {
+      week: "#{beginning_of_week} - #{end_of_week}",
+      days: []
+    }
 
     while end_of_week > current_day
       begin_of_the_day = 19
@@ -47,15 +45,15 @@ class Api::V1::WorkshiftsController < Api::V1::BaseController
       
       workshifts = (begin_of_the_day..end_of_the_day).map do |hour|
         datetime = DateTime.new(current_day.year, current_day.month, current_day.day, hour, 0)
-        workshift = Workshift.find_by_timestamp(datetime)
-        user_id = workshift ? workshift.user.id : nil
+        workshift = @service.workshifts.find_by_timestamp(datetime)
+        user = workshift ? workshift.user : nil
         {
           hour: datetime,
-          user_id: user_id
+          user: user
         }
       end
       
-      @workshifts.first[:days] << {
+      @workshifts[:days] << {
         day: current_day,
         workshifts: workshifts
       }
@@ -63,7 +61,6 @@ class Api::V1::WorkshiftsController < Api::V1::BaseController
       current_day = current_day.beginning_of_day + 1.day
     end
     
-
     render json: @workshifts
   end
 

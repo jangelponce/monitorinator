@@ -31,13 +31,19 @@
       </div>
     </MModal>
 
-    <MDropdown :text="'Select a service'">
-      <MDropdownItem v-for="service in services" :key="service.id" @click="selectService(service)">
+    <MDropdown :text="'Selecciona un servicio'">
+      <MDropdownItem v-for="service in services" :key="service.id" @click="selectedService = service">
         {{ service.name }}
       </MDropdownItem>
     </MDropdown>
 
-    <MServiceDashboard v-if="selectedService.id" :service="selectedService"></MServiceDashboard>
+    <MDropdown :text="'Selecciona una semana'">
+      <MDropdownItem v-for="week in weeks" :key="week.id" @click="selectedWeek = week">
+        {{ week }}
+      </MDropdownItem>
+    </MDropdown>
+
+    <MServiceDashboard v-if="selectedService.id" :service="selectedService" :week="selectedWeek"></MServiceDashboard>
   </div>
 </template>
 
@@ -59,11 +65,20 @@ export default {
   data() {
     return {
       openModal: false,
-      selectedService: {},
+      selectedService: {
+        weeks: []
+      },
+      selectedWeek: null,
       services: [],
       form: {
         name: ""
       }
+    }
+  },
+  computed: {
+    weeks() {
+      console.log()
+      return this.selectedService.weeks
     }
   },
   created() {
@@ -79,6 +94,16 @@ export default {
           alert(error)
         })
     },
+    getWeeks () {
+      axios.get(`http://192.168.70.214:3000/api/v1/services/${this.selectedService.id}/weeks`)
+        .then((result) => {
+          this.selectedService.weeks = result.data
+          this.openModal = false
+        })
+        .catch((error) => {
+          alert(error)
+        })
+    },
     submitService () {
       axios.post('http://192.168.70.214:3000/api/v1/services', this.form)
         .then((result) => {
@@ -88,9 +113,11 @@ export default {
         .catch((error) => {
           alert(error)
         })
-    },
-    selectService (service) {
-      this.selectedService = service
+    }
+  },
+  watch: {
+    selectedService() {
+      this.getWeeks()
     }
   }
 }

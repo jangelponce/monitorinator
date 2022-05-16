@@ -1,5 +1,5 @@
 class Api::V1::ServicesController < Api::V1::BaseController
-  before_action :set_service, only: %i[ show update destroy calendar ]
+  before_action :set_service, only: %i[ show update destroy weeks ]
 
   # GET /api/v1/services
   def index
@@ -38,24 +38,24 @@ class Api::V1::ServicesController < Api::V1::BaseController
     @service.destroy
   end
 
-  def calendar
-    weeks = [
-      {
-        week: "Semana 10",
-        days: [
-          {
-            day: Date.today,
-            workshifts: [
-              {
-                hour: Time.now.hour,
-                assigned_to: "Julian"
-              }
-            ]
-          }
-        ]
-      }
-    ]
-    render json: weeks
+  def weeks
+    today = DateTime.now
+    first_week = if workshift = @service.workshifts.order(:timestamp).first
+      workshift_date = workshift.timestamp.to_datetime
+      if today > workshift_date
+        workshift_date
+      else
+        today
+      end
+    else
+      today
+    end.beginning_of_week
+
+    last_week = today + 4.weeks
+
+    @weeks = (first_week..last_week).step(7).map(&:to_date)
+    
+    render json: @weeks
   end
 
   private
