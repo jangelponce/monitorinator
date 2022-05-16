@@ -1,30 +1,42 @@
 <template>
-  <section class="section">
-    <h1 class="title">{{ service.name }}</h1>
-    <h2 class="subtitle">
-      {{ dateRangeToSubtitle(beginningOfWeek, endOfWeek) }}
-    </h2>
-    <div class="tile is-ancestor" v-for="(days, i) in chunks" :key="i">
-      <div class="tile is-parent">
-        <article class="tile is-child box" v-for="day in days" :key="day.day">
-          <p class="subtitle">{{ dateToCardTitle(day.day) }}</p>
-          <div class="menu">
-            <ul class="menu-list">
-              <li v-for="workshift in day.workshifts" :key="workshift.hour">
-                <div class="level">
-                  <div class="level-item">
-                    {{ timeToHourRange(workshift.hour) }}
-                  </div>
-                  <div class="level-item">
-                    {{ workshift.user && workshift.user.name }}
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </article>
+  <section>
+    <div class="hero">
+      <div class="hero-body media px-0">
+        <div class="media-content">
+          <p class="title is-4">{{ service.name }}</p>
+          <p class="subtitle">{{ dateRangeToSubtitle(beginningOfWeek, endOfWeek) }}</p>
+        </div>
+        <div class="media-right">
+          <button class="button is-primary" @click="editMode = !editMode">Editar disponibilidad</button>
+        </div>
       </div>
     </div>
+
+    <aside class="menu pb-6" v-for="day in days" :key="day.day">
+      <p class="menu-label">
+        {{ dateToCardTitle(day.day) }}
+      </p>
+      <ul class="menu-list">
+        <li v-for="workshift in day.workshifts" :key="workshift.hour">
+          <div class="level">
+            <div class="level-item">
+              {{ timeToHourRange(workshift.hour) }}
+            </div>
+            <div v-if="editMode" class="level-item">
+              <div v-if="workshift.user">
+                {{ workshift.user && workshift.user.name }}  
+              </div>
+              <div v-else>
+                Edit mode
+              </div>
+            </div>
+            <div v-else class="level-item">
+              {{ workshift.user && workshift.user.name }}
+            </div>
+          </div>
+        </li>
+      </ul>
+    </aside>
   </section>  
 </template>
 
@@ -39,9 +51,10 @@ export default {
   },
   data () {
     return {
+      editMode: true,
       beginningOfWeek: null,
       endOfWeek: null,
-      chunks: []
+      days: []
     }
   },
   created() {
@@ -53,12 +66,9 @@ export default {
         axios.get(`http://192.168.70.214:3000/api/v1/services/${this.service.id}/workshifts/week?date=${this.week}`)
           .then((response) => {
             const { week, days} = response.data
+            this.days = days
             this.beginningOfWeek = week.beginning_of_week
             this.endOfWeek = week.end_of_week
-            this.chunks = []
-            for (let i = 0; i < days.length; i += 3) {
-              this.chunks.push(days.slice(i, i + 3))
-            }
           })
           .catch((error) => {
             alert(error)
