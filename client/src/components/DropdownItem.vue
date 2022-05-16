@@ -21,3 +21,9 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.dropdown-item {
+  cursor: pointer;
+}
+</style>

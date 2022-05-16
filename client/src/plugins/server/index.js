@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const config = {
-  serverUrl: process.env.VUE_APP_SERVER_URL || 'http://localhost'
+  serverUrl: process.env.VUE_APP_SERVER_URL || 'http://localhost:3000'
 }
 
 const request = axios.create({
