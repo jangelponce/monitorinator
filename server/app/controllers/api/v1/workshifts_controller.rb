@@ -4,14 +4,39 @@ class Api::V1::WorkshiftsController < Api::V1::BaseController
 
   # GET /workshifts
   def index    
-    today = DateTime.now
-    begin_of_week = today.beginning_of_week
-    end_of_week = today.end_of_week
-    current_day = begin_of_week
+    @workshifts = @service.workshifts.order(:timestamp)
+    render json: @workshifts
+  end
+
+  # GET /workshifts/1
+  def show
+    render json: @workshift
+  end
+
+  # POST /workshifts
+  def create
+    @workshift = Workshift.new(workshift_params)
+
+    if @workshift.save
+      render json: @workshift, status: :created
+    else
+      render json: @workshift.errors, status: :unprocessable_entity
+    end
+  end
+
+  def week
+    beginning_of_week = if params[:beginning_of_week]
+      DateTime.new(*params[:beginning_of_week].split("-").map(&:to_i))
+    else
+      DateTime.now
+    end.beginning_of_week
+    
+    current_day = beginning_of_week
+    end_of_week = current_day.end_of_week
 
     @workshifts = [
       {
-        week: "#{begin_of_week} - #{end_of_week}",
+        week: "#{beginning_of_week} - #{end_of_week}",
         days: []
       }
     ]
@@ -40,22 +65,6 @@ class Api::V1::WorkshiftsController < Api::V1::BaseController
     
 
     render json: @workshifts
-  end
-
-  # GET /workshifts/1
-  def show
-    render json: @workshift
-  end
-
-  # POST /workshifts
-  def create
-    @workshift = Workshift.new(workshift_params)
-
-    if @workshift.save
-      render json: @workshift, status: :created
-    else
-      render json: @workshift.errors, status: :unprocessable_entity
-    end
   end
 
   # PATCH/PUT /workshifts/1
