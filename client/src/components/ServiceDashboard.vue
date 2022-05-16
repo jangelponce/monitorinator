@@ -32,18 +32,23 @@
               <td colspan="1"></td>
             </template>
           </tr>
-          <tr v-for="workshift in day.workshifts" :key="workshift.hour">
+          <tr v-for="ws in day.workshifts" :key="ws.hour">
             <td>
-              {{ timeToHourRange(workshift.hour) }}
+              {{ timeToHourRange(ws.hour) }}
             </td>
             <template v-if="editMode">
               <td v-for="user in users" :key="user.id">
-                <MAvailabilityCheckbox :user="user.id" :service="service.id" :datetime="workshift.hour" />
+                <MAvailabilityCheckbox 
+                  :userId="user.id"
+                  :serviceId="service.id" 
+                  :timestamp="ws.hour" 
+                  :workshift="ws"
+                />
               </td>
             </template>
             <template v-else>
               <td>
-                {{ workshift.user && workshift.user.name }}
+                {{ ws.workshift && ws.workshift.user.name }}
               </td>
             </template>
           </tr>

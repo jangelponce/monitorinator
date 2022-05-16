@@ -4,7 +4,7 @@ class Api::V1::WorkshiftsController < Api::V1::BaseController
 
   # GET /workshifts
   def index    
-    @workshifts = @service.workshifts.order(:timestamp)
+    @workshifts = @service.workshifts.accepted.order(:timestamp)
     render json: @workshifts
   end
 
@@ -48,11 +48,15 @@ class Api::V1::WorkshiftsController < Api::V1::BaseController
       
       workshifts = (begin_of_the_day..end_of_the_day).map do |hour|
         datetime = DateTime.new(current_day.year, current_day.month, current_day.day, hour, 0)
-        workshift = @service.workshifts.find_by_timestamp(datetime)
-        user = workshift ? workshift.user : nil
+        ws = @service.workshifts.where(timestamp: datetime).includes(:user).as_json(include: :user)
+        puts ws
+        accepted = ws.find do |w|
+          w["status"] === "accepted"
+        end
         {
           hour: datetime,
-          user: user
+          available: ws,
+          workshift: accepted
         }
       end
       

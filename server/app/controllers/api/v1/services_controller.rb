@@ -40,7 +40,7 @@ class Api::V1::ServicesController < Api::V1::BaseController
 
   def weeks
     today = DateTime.now
-    first_week = if workshift = @service.workshifts.order(:timestamp).first
+    first_week = if workshift = @service.workshifts.accepted.order(:timestamp).first
       workshift_date = workshift.timestamp.to_datetime
       if today > workshift_date
         workshift_date
