@@ -5,8 +5,6 @@
 </template>
 
 <script>
-import axios from "axios"
-
 export default {
   name: "m-availability-checkbox",
   props: {
@@ -37,7 +35,7 @@ export default {
       }
     },
     createWorkshift() {
-      axios.post(`http://192.168.70.214:3000/api/v1/services/${this.serviceId}/workshifts`, {
+      this.$server.post(`/api/v1/services/${this.serviceId}/workshifts`, {
         workshift: {
           timestamp: this.timestamp,
           user_id: this.userId,
@@ -52,7 +50,7 @@ export default {
         })
     },
     deleteWorkshift() {
-      axios.delete(`http://192.168.70.214:3000/api/v1/services/${this.serviceId}/workshifts/${this.record.id}`)
+      this.$server.delete(`/api/v1/services/${this.serviceId}/workshifts/${this.record.id}`)
         .then(() => {
           this.record = null
         })

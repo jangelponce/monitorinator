@@ -48,7 +48,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import MDropdown from '@/components/Dropdown.vue'
 import MDropdownItem from '@/components/DropdownItem.vue'
 import MModal from '@/components/Modal.vue'
@@ -86,7 +85,7 @@ export default {
   },
   methods: {
     getServices () {
-      axios.get('http://192.168.70.214:3000/api/v1/services')
+      this.$server.get('/api/v1/services')
         .then((result) => {
           this.services = result.data
         })
@@ -95,7 +94,7 @@ export default {
         })
     },
     getWeeks () {
-      axios.get(`http://192.168.70.214:3000/api/v1/services/${this.selectedService.id}/weeks`)
+      this.$server.get(`/api/v1/services/${this.selectedService.id}/weeks`)
         .then((result) => {
           this.selectedService.weeks = result.data
           this.openModal = false
@@ -105,7 +104,7 @@ export default {
         })
     },
     submitService () {
-      axios.post('http://192.168.70.214:3000/api/v1/services', this.form)
+      this.$server.post('/api/v1/services', this.form)
         .then((result) => {
           this.services.push(result.data)
           this.openModal = false

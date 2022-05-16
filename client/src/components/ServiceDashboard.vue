@@ -97,7 +97,6 @@
 </template>
 
 <script>
-import axios from "axios"
 import MAvailabilityCheckbox from "@/components/AvailabilityCheckbox.vue"
 
 export default {
@@ -137,7 +136,7 @@ export default {
   methods: {
     getWorkshiftsWeek() {
       if (this.week) {
-        axios.get(`http://192.168.70.214:3000/api/v1/services/${this.service.id}/workshifts/week?date=${this.week}`)
+        this.$server.get(`/api/v1/services/${this.service.id}/workshifts/week?date=${this.week}`)
           .then((response) => {
             const { week, days} = response.data
             this.days = days
@@ -151,7 +150,7 @@ export default {
       }
     },
     getUsers() {
-      axios.get(`http://192.168.70.214:3000/api/v1/users`)
+      this.$server.get(`/api/v1/users`)
         .then((response) => {
           this.users = response.data
         })
@@ -161,7 +160,7 @@ export default {
     },
     calculateWorkshifts() {
       console.log("calculating")
-      axios.put(`http://192.168.70.214:3000/api/v1/services/${this.service.id}/workshifts/calculate?date=${this.week}`)
+      this.$server.put(`/api/v1/services/${this.service.id}/workshifts/calculate?date=${this.week}`)
         .then(() => {
           console.log("calculations done")
         })
